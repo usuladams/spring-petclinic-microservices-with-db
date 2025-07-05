@@ -15,11 +15,6 @@
  */
 package org.springframework.samples.petclinic.api;
 
-
-import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-
-
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.timelimiter.TimeLimiterConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,18 +37,6 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import java.time.Duration;
-
-
-@EnableZuulProxy
-@EnableDiscoveryClient
-@SpringBootApplication
-public class ApiGatewayApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(ApiGatewayApplication.class, args);
-    }
-}
-
-
 
 
 /**
