@@ -90,7 +90,11 @@ resource "aws_iam_instance_profile" "petclinic-master-server-profile" {
 
 resource "aws_instance" "kube-master" {
   ami = "ami-0a7d80731ae1b2435"
+<<<<<<< HEAD
   instance_type = "t2.micro"
+=======
+  instance_type = "t3a.medium"
+>>>>>>> feature/msp-16
   iam_instance_profile = aws_iam_instance_profile.petclinic-master-server-profile.name
   vpc_security_group_ids = [aws_security_group.k8s-sec-gr.id]
   key_name = var.keypair
@@ -107,7 +111,11 @@ resource "aws_instance" "kube-master" {
 
 resource "aws_instance" "worker-1" {
   ami = "ami-0a7d80731ae1b2435"
+<<<<<<< HEAD
   instance_type = "t2.micro"
+=======
+  instance_type = "t3a.medium"
+>>>>>>> feature/msp-16
   vpc_security_group_ids = [aws_security_group.k8s-sec-gr.id]
   key_name = var.keypair
   subnet_id = "subnet-05db8852e3a3f8053"  # select own subnet_id of us-east-1a
@@ -123,7 +131,11 @@ resource "aws_instance" "worker-1" {
 
 resource "aws_instance" "worker-2" {
   ami = "ami-0a7d80731ae1b2435"
+<<<<<<< HEAD
   instance_type = "t2.micro"
+=======
+  instance_type = "t3a.medium"
+>>>>>>> feature/msp-16
   vpc_security_group_ids = [aws_security_group.k8s-sec-gr.id]
   key_name = var.keypair
   subnet_id = "subnet-05db8852e3a3f8053"  # select own subnet_id of us-east-1a
