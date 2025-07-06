@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-server
+  template:
+    metadata:
+      labels:
+        app: prometheus-server
+    spec:
+      containers:
+        - name: prometheus-server
+          image: {{ .Values.IMAGE_TAG_PROMETHEUS_SERVICE }}
+          ports:
+            - containerPort: 9090
+          resources:
+            limits:
+              memory: "512Mi"

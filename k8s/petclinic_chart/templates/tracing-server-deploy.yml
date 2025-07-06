@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tracing-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tracing-server
+  template:
+    metadata:
+      labels:
+        app: tracing-server
+    spec:
+      containers:
+        - name: tracing-server
+          image: openzipkin/zipkin
+          ports:
+            - containerPort: 9411
+          resources:
+            limits:
+              memory: "512Mi"
