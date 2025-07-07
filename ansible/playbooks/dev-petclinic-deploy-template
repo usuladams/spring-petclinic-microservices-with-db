@@ -18,7 +18,7 @@
       kubectl create ns petclinic-dev
 
       kubectl delete secret gcp-artifact-registry -n petclinic-dev || true
-      kubectl create secret docker-registry gcp-artifact-registry n petclinic-dev \
+      kubectl create secret docker-registry gcp-artifact-registry -n petclinic-dev \
           --docker-server=${LOCATION}-docker.pkg.dev \
           --docker-username=_json_key \
           --docker-password=${GOOGLE_APPLICATION_CREDENTIALS}\
