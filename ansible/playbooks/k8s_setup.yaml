@@ -75,6 +75,22 @@
         state: restarted
         enabled: true
 
+    - name: Install Google Cloud SDK
+      shell: |
+        curl -sSL https://sdk.cloud.google.com | bash
+        exec -l $SHELL
+        gcloud --version
+      args:
+        executable: /bin/bash
+      register: gcloud_install
+      changed_when: "'Google Cloud SDK' in gcloud_install.stdout"
+
+    - name: Configure Docker with GCP Auth
+      shell: |
+        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+        gcloud auth configure-docker europe-west3-docker.pkg.dev
+
+
   handlers:
     - name: Reload sysctl
       ansible.builtin.command: sysctl --system

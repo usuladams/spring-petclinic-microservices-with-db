@@ -126,8 +126,10 @@ pipeline {
 
         stage('Create Kubernetes Cluster for QA Automation Build') {
             steps {
+                withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                 echo "Setup Kubernetes cluster for ${APP_NAME} App"
                 sh "ansible-playbook -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml ./ansible/playbooks/k8s_setup.yaml"
+                }
             }
         }
 
