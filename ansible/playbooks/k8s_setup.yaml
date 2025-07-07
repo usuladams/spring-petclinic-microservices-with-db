@@ -75,6 +75,29 @@
         state: restarted
         enabled: true
 
+    - name: Add GCP apt repository key
+      ansible.builtin.shell: |
+        curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+
+    - name: Add GCP apt source list
+      ansible.builtin.shell: |
+        echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" > /etc/apt/sources.list.d/google-cloud-sdk.list
+
+    - name: Update apt cache after adding GCP repo
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install Google Cloud CLI
+      ansible.builtin.apt:
+        name: google-cloud-cli
+        state: present
+
+    - name: Authenticate with GCP service account
+      ansible.builtin.shell: |
+        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+      become: false
+      remote_user: ubuntu
+
   handlers:
     - name: Reload sysctl
       ansible.builtin.command: sysctl --system
