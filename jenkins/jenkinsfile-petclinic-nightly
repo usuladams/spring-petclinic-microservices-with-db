@@ -128,7 +128,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                 echo "Setup Kubernetes cluster for ${APP_NAME} App"
-                sh "ansible-playbook -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml ./ansible/playbooks/k8s_setup.yaml"
+                sh "ansible-playbook -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml ./ansible/playbooks/k8s_setup.yaml -e google_credentials_path=${GOOGLE_APPLICATION_CREDENTIALS}"
                 }
             }
         }

@@ -94,11 +94,9 @@
 
     - name: Authenticate with GCP service account
       ansible.builtin.shell: |
-        gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+        gcloud auth activate-service-account --key-file={{ google_credentials_path }}
       become: false
       remote_user: ubuntu
-      environment:
-        GOOGLE_APPLICATION_CREDENTIALS: "{{ lookup('env', 'GOOGLE_APPLICATION_CREDENTIALS') }}"
 
   handlers:
     - name: Reload sysctl
