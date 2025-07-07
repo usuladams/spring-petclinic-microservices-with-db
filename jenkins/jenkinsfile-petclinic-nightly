@@ -6,16 +6,13 @@ pipeline {
         PROJECT_ID = 'k8s-demo-464210'
         LOCATION="europe-west3"
         HELM_CHART_REPO_NAME="petclinic-helm-charts"
-        PROJECT_ID='k8s-demo-464210'
         ARTIFACT_REGISTRY="${LOCATION}-docker.pkg.dev/${PROJECT_ID}"
         ANS_KEYPAIR="petclinic-${APP_NAME}-dev-${BUILD_NUMBER}.key"
         ANSIBLE_PRIVATE_KEY_FILE="${WORKSPACE}/${ANS_KEYPAIR}"
         ANSIBLE_HOST_KEY_CHECKING="False"
         AWS_ACCOUNT_ID=sh(script:'aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
         AWS_REGION="us-east-1"
-
         CREDENTIALS_ID = 'gcp-k8s-token'
-
     }
 
     stages {
