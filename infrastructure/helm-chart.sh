@@ -106,3 +106,10 @@ helm pull oci://europe-west3-docker.pkg.dev/k8s-demo-464210/petclinic-helm-chart
 
 
 helm upgrade --install     petclinic-app-release oci://europe-west3-docker.pkg.dev/k8s-demo-464210/petclinic-helm-charts/petclinic_chart     --version 7 --namespace petclinic-dev
+
+
+      # kubectl create secret docker-registry gcp-artifact-registry -n petclinic-dev \
+      #     --docker-server=${LOCATION}-docker.pkg.dev \
+      #     --docker-username=_json_key \
+      #     --docker-password=${GCP_KEY_JSON} \
+      #     --docker-email=usul.adem@gmail.com    

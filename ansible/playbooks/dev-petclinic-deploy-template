@@ -17,14 +17,25 @@
     shell: |
       kubectl create ns petclinic-dev
 
-      export GCP_KEY_JSON=$(cat ${GOOGLE_APPLICATION_CREDENTIALS} | base64 | tr -d '\n')
-
       kubectl delete secret gcp-artifact-registry -n petclinic-dev || true
-      kubectl create secret docker-registry gcp-artifact-registry -n petclinic-dev \
-          --docker-server=${LOCATION}-docker.pkg.dev \
-          --docker-username=_json_key \
-          --docker-password=${GCP_KEY_JSON}\
-          --docker-email=usul.adem@gmail.com    
+
+      cat <<EOF > /home/ubuntu/.docker/config.json
+      {
+        "auths": {
+          "europe-west3-docker.pkg.dev": {
+            "username": "_json_key",
+            "password": $(cat /tmp/gcp-sa.json),
+            "email": "usul.adem@gmail.com"
+          }
+        }
+      }
+      EOF
+
+      kubectl create secret generic gcp-artifact-registry -n petclinic-dev \
+        --from-file=.dockerconfigjson=/home/ubuntu/.docker/config.json \
+        --type=kubernetes.io/dockerconfigjson
+
+
 
       helm upgrade --install \
           petclinic-app-release oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}/petclinic_chart \
