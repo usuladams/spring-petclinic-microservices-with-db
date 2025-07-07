@@ -78,8 +78,9 @@
     - name: Install docker-credential-gcloud
       become: true
       apt:
-        name: docker-credential-gcloud
+        name: google-cloud-sdk
         state: present
+        update_cache: yes
 
   handlers:
     - name: Reload sysctl
