@@ -16,6 +16,9 @@
           net.ipv4.ip_forward = 1
       notify: Reload sysctl
 
+    - name: Load br_netfilter kernel module
+      ansible.builtin.shell: modprobe br_netfilter
+
     - name: Update apt cache
       ansible.builtin.apt:
         update_cache: true
