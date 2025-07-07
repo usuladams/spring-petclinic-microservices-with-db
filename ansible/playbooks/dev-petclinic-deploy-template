@@ -17,11 +17,13 @@
     shell: |
       kubectl create ns petclinic-dev
 
+      export GCP_KEY_JSON=$(cat ${GOOGLE_APPLICATION_CREDENTIALS} | base64 | tr -d '\n')
+
       kubectl delete secret gcp-artifact-registry -n petclinic-dev || true
       kubectl create secret docker-registry gcp-artifact-registry -n petclinic-dev \
           --docker-server=${LOCATION}-docker.pkg.dev \
           --docker-username=_json_key \
-          --docker-password=${GOOGLE_APPLICATION_CREDENTIALS}\
+          --docker-password=${GCP_KEY_JSON}\
           --docker-email=usul.adem@gmail.com    
 
       helm upgrade --install \

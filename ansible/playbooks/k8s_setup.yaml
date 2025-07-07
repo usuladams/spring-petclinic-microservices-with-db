@@ -110,6 +110,14 @@
       remote_user: ubuntu
       environment:
         GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-sa.json
+    
+    - name: Configure docker to authenticate with Artifact Registry
+      ansible.builtin.shell: |
+        gcloud auth configure-docker europe-west3-docker.pkg.dev --quiet
+      become: false
+      remote_user: ubuntu
+      environment:
+        GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-sa.json
 
   handlers:
     - name: Reload sysctl
