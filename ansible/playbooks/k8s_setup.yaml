@@ -92,23 +92,19 @@
         name: google-cloud-cli
         state: present
 
-    - name: Copy and activate GCP credentials
-      hosts: all
-      become: false
-      tasks:
-        - name: Copy GCP service account to remote
-          copy:
-            src: "{{ google_credentials_path }}"
-            dest: /tmp/gcp-sa.json
-            mode: '0600'
+    - name: Copy GCP service account to remote
+      copy:
+        src: "{{ google_credentials_path }}"
+        dest: /tmp/gcp-sa.json
+        mode: '0600'
 
-        - name: Authenticate with GCP service account
-          ansible.builtin.shell: |
-            gcloud auth activate-service-account --key-file=/tmp/gcp-sa.json
-          become: false
-          remote_user: ubuntu
-          environment:
-            GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-sa.json
+    - name: Authenticate with GCP service account
+      ansible.builtin.shell: |
+        gcloud auth activate-service-account --key-file=/tmp/gcp-sa.json
+      become: false
+      remote_user: ubuntu
+      environment:
+        GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-sa.json
 
   handlers:
     - name: Reload sysctl
