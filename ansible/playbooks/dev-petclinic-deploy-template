@@ -1,0 +1,26 @@
+- hosts: role_master
+  tasks:
+
+  - name: Create .docker folder
+    file:
+      path: /home/ubuntu/.docker
+      state: directory
+      mode: '0755'
+
+  - name: copy the docker config file
+    become: yes
+    copy: 
+      src: $JENKINS_HOME/.docker/config.json
+      dest: /home/ubuntu/.docker/config.json
+
+  - name: deploy petclinic application
+    shell: |
+      kubectl create ns petclinic-dev
+      kubectl delete secret regcred -n petclinic-dev || true
+      kubectl create secret generic regcred -n petclinic-dev \
+        --from-file=.dockerconfigjson=/home/ubuntu/.docker/config.json \
+        --type=kubernetes.io/dockerconfigjson
+
+      helm upgrade --install \
+          petclinic-app-release oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}/petclinic_chart \
+          --version ${BUILD_NUMBER} --namespace petclinic-dev
