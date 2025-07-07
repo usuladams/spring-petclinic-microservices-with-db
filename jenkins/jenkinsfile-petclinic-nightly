@@ -6,7 +6,7 @@ pipeline {
         PROJECT_ID = 'k8s-demo-464210'
         LOCATION="europe-west3"
         HELM_CHART_REPO_NAME="petclinic-helm-charts"
-        ARTIFACT_REGISTRY="${LOCATION}-docker.pkg.dev/${PROJECT_ID}"
+        ARTIFACT_REGISTRY="${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${APP_REPO_NAME}"
         ANS_KEYPAIR="petclinic-${APP_NAME}-dev-${BUILD_NUMBER}.key"
         ANSIBLE_PRIVATE_KEY_FILE="${WORKSPACE}/${ANS_KEYPAIR}"
         ANSIBLE_HOST_KEY_CHECKING="False"
@@ -94,7 +94,7 @@ pipeline {
 
         stage('Push Images to GCP Artifact Repo') {
             steps {
-                echo "Pushing ${APP_NAME} App Images to ECR Repo"
+                echo "Pushing ${APP_NAME} App Images to  GCP Artifact Repo"
                 sh ". ./jenkins/push-dev-docker-images-to-ecr.sh"
             }
         }
