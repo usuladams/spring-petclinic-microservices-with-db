@@ -75,13 +75,6 @@
         state: restarted
         enabled: true
 
-    - name: Install docker-credential-gcloud
-      become: true
-      apt:
-        name: google-cloud-sdk
-        state: present
-        update_cache: yes
-
   handlers:
     - name: Reload sysctl
       ansible.builtin.command: sysctl --system
