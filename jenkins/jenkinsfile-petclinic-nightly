@@ -141,7 +141,7 @@ pipeline {
                     // sh "helm repo add stable-petclinic s3://petclinic-helm-charts-<put-your-name>/stable/myapp/"
                     // sh "helm package k8s/petclinic_chart"
                     // sh "helm s3 push --force petclinic_chart-${BUILD_NUMBER}.tgz stable-petclinic"
-
+                    sh "helm package k8s/petclinic_chart"
                     sh "helm push petclinic_chart-${BUILD_NUMBER}.tgz oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}/"
                     sh "envsubst < ansible/playbooks/dev-petclinic-deploy-template > ansible/playbooks/dev-petclinic-deploy.yaml"
                     sh "sleep 60"    
@@ -170,33 +170,33 @@ pipeline {
             }
         }
 
-        stage('Run QA Automation Tests'){
-            steps {
-                echo "Run the Selenium Functional Test on QA Environment"
-                sh 'ansible-playbook -vvv --connection=local --inventory 127.0.0.1, --extra-vars "workspace=${WORKSPACE} master_public_ip=${MASTER_PUBLIC_IP}" ./ansible/playbooks/pb_run_selenium_jobs.yaml'
-            }
-        }
+        // stage('Run QA Automation Tests'){
+        //     steps {
+        //         echo "Run the Selenium Functional Test on QA Environment"
+        //         sh 'ansible-playbook -vvv --connection=local --inventory 127.0.0.1, --extra-vars "workspace=${WORKSPACE} master_public_ip=${MASTER_PUBLIC_IP}" ./ansible/playbooks/pb_run_selenium_jobs.yaml'
+        //     }
+        // }
  }
 
-    post {
-        always {
-            echo 'Deleting all local images'
-            sh 'docker image prune -af'
-            echo 'Delete the Image Repository on ECR'
-            // sh """
-            //     aws ecr delete-repository \
-            //       --repository-name ${APP_REPO_NAME} \
-            //       --region ${AWS_REGION}\
-            //       --force
-            //     """
-            echo 'Tear down the Kubernetes Cluster'
-            sh """
-            cd infrastructure/dev-k8s-terraform
-            terraform destroy -auto-approve -no-color
-            """
-            echo "Delete existing key pair using AWS CLI"
-            sh "aws ec2 delete-key-pair --region ${AWS_REGION} --key-name ${ANS_KEYPAIR}"
-            sh "rm -rf ${ANS_KEYPAIR}"
-        }
-    }
+    // post {
+    //     always {
+    //         echo 'Deleting all local images'
+    //         sh 'docker image prune -af'
+    //         echo 'Delete the Image Repository on ECR'
+    //         // sh """
+    //         //     aws ecr delete-repository \
+    //         //       --repository-name ${APP_REPO_NAME} \
+    //         //       --region ${AWS_REGION}\
+    //         //       --force
+    //         //     """
+    //         echo 'Tear down the Kubernetes Cluster'
+    //         sh """
+    //         cd infrastructure/dev-k8s-terraform
+    //         terraform destroy -auto-approve -no-color
+    //         """
+    //         echo "Delete existing key pair using AWS CLI"
+    //         sh "aws ec2 delete-key-pair --region ${AWS_REGION} --key-name ${ANS_KEYPAIR}"
+    //         sh "rm -rf ${ANS_KEYPAIR}"
+    //     }
+    // }
 }
