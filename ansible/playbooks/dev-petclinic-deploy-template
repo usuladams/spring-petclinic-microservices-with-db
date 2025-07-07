@@ -16,10 +16,13 @@
   - name: deploy petclinic application
     shell: |
       kubectl create ns petclinic-dev
-      kubectl delete secret regcred -n petclinic-dev || true
-      kubectl create secret generic regcred -n petclinic-dev \
-        --from-file=.dockerconfigjson=/home/ubuntu/.docker/config.json \
-        --type=kubernetes.io/dockerconfigjson
+
+      kubectl delete secret gcp-artifact-registry -n petclinic-dev || true
+      kubectl create secret docker-registry gcp-artifact-registry n petclinic-dev \
+          --docker-server=${LOCATION}-docker.pkg.dev \
+          --docker-username=_json_key \
+          --docker-password=${GOOGLE_APPLICATION_CREDENTIALS}\
+          --docker-email=usul.adem@gmail.com    
 
       helm upgrade --install \
           petclinic-app-release oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}/petclinic_chart \

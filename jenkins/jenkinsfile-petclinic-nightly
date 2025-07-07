@@ -2,59 +2,91 @@ pipeline {
     agent any
     environment {
         APP_NAME="petclinic"
-        APP_REPO_NAME="clarusway-repo/${APP_NAME}-app-dev"
-        AWS_ACCOUNT_ID=sh(script:'aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
-        AWS_REGION="us-east-1"
-        ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+        APP_REPO_NAME="${APP_NAME}-app-dev"
+        PROJECT_ID = 'k8s-demo-464210'
+        LOCATION="europe-west3"
+        HELM_CHART_REPO_NAME="petclinic-helm-charts"
+        PROJECT_ID='k8s-demo-464210'
+        ARTIFACT_REGISTRY="${LOCATION}-docker.pkg.dev/${PROJECT_ID}"
         ANS_KEYPAIR="petclinic-${APP_NAME}-dev-${BUILD_NUMBER}.key"
         ANSIBLE_PRIVATE_KEY_FILE="${WORKSPACE}/${ANS_KEYPAIR}"
         ANSIBLE_HOST_KEY_CHECKING="False"
+        AWS_ACCOUNT_ID=sh(script:'aws sts get-caller-identity --query Account --output text', returnStdout:true).trim()
+        AWS_REGION="us-east-1"
+
+        CREDENTIALS_ID = 'gcp-k8s-token'
+
     }
+
     stages {
-        stage('Create ECR Repo') {
+        stage('Create GCP Artifact Repo') {
             steps {
-                echo "Creating ECR Repo for ${APP_NAME} app"
+                echo "Creating GCP Artifact Repo for ${APP_NAME} app"
+                
+                // Service Account kimliğiyle gcloud'a login ol
+                withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                 sh '''
-                aws ecr describe-repositories --region ${AWS_REGION} --repository-name ${APP_REPO_NAME} || \
-                         aws ecr create-repository \
-                         --repository-name ${APP_REPO_NAME} \
-                         --image-scanning-configuration scanOnPush=true \
-                         --image-tag-mutability MUTABLE \
-                         --region ${AWS_REGION}
+                    gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+                    gcloud config set project ${PROJECT_ID}
+
+                    gcloud artifacts repositories describe ${APP_REPO_NAME} --location=${LOCATION} > /dev/null 2>&1 \
+                                && echo "Artifact Repo '${APP_REPO_NAME}' already exists." \
+                                || (echo "Creating Artifact Repo '${APP_REPO_NAME}'..." && \
+                                gcloud artifacts repositories create ${APP_REPO_NAME} \
+                                --repository-format=docker \
+                                --location="${LOCATION}" \
+                                --description="GCP Repo for petclinic app" \
+                                --immutable-tags \
+                                --async \
+                                --disable-vulnerability-scanning)
+                    
+                    gcloud artifacts repositories describe ${HELM_CHART_REPO_NAME} --location=${LOCATION} > /dev/null 2>&1 \
+                                && echo "Artifact Repo '${HELM_CHART_REPO_NAME}' already exists." \
+                                || (echo "Creating Artifact Repo '${HELM_CHART_REPO_NAME}'..." && \
+                                gcloud artifacts repositories create ${HELM_CHART_REPO_NAME} \
+                                --repository-format=docker \
+                                --location="${LOCATION}" \
+                                --description="Helm Chart Repo for petclinic app" \
+                                --immutable-tags \
+                                --async \
+                                --disable-vulnerability-scanning)
+
                 '''
+                }
             }
         }
+
         stage('Package Application') {
             steps {
                 echo 'Packaging the app into jars with maven'
                 sh ". ./jenkins/package-with-maven-container.sh"
             }
         }
+
         stage('Prepare Tags for Docker Images') {
             steps {
                 echo 'Preparing Tags for Docker Images'
                 script {
                     MVN_VERSION=sh(script:'. ${WORKSPACE}/spring-petclinic-admin-server/target/maven-archiver/pom.properties && echo $version', returnStdout:true).trim()
-                    env.IMAGE_TAG_ADMIN_SERVER="${ECR_REGISTRY}/${APP_REPO_NAME}:admin-server-v${MVN_VERSION}-b${BUILD_NUMBER}"
+                    env.IMAGE_TAG_ADMIN_SERVER="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:admin-server-v${MVN_VERSION}-b${BUILD_NUMBER}"
                     MVN_VERSION=sh(script:'. ${WORKSPACE}/spring-petclinic-api-gateway/target/maven-archiver/pom.properties && echo $version', returnStdout:true).trim()
-                    env.IMAGE_TAG_API_GATEWAY="${ECR_REGISTRY}/${APP_REPO_NAME}:api-gateway-v${MVN_VERSION}-b${BUILD_NUMBER}"
+                    env.IMAGE_TAG_API_GATEWAY="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:api-gateway-v${MVN_VERSION}-b${BUILD_NUMBER}"
                     MVN_VERSION=sh(script:'. ${WORKSPACE}/spring-petclinic-config-server/target/maven-archiver/pom.properties && echo $version', returnStdout:true).trim()
-                    env.IMAGE_TAG_CONFIG_SERVER="${ECR_REGISTRY}/${APP_REPO_NAME}:config-server-v${MVN_VERSION}-b${BUILD_NUMBER}"
+                    env.IMAGE_TAG_CONFIG_SERVER="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:config-server-v${MVN_VERSION}-b${BUILD_NUMBER}"
                     MVN_VERSION=sh(script:'. ${WORKSPACE}/spring-petclinic-customers-service/target/maven-archiver/pom.properties && echo $version', returnStdout:true).trim()
-                    env.IMAGE_TAG_CUSTOMERS_SERVICE="${ECR_REGISTRY}/${APP_REPO_NAME}:customers-service-v${MVN_VERSION}-b${BUILD_NUMBER}"
+                    env.IMAGE_TAG_CUSTOMERS_SERVICE="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:customers-service-v${MVN_VERSION}-b${BUILD_NUMBER}"
                     MVN_VERSION=sh(script:'. ${WORKSPACE}/spring-petclinic-discovery-server/target/maven-archiver/pom.properties && echo $version', returnStdout:true).trim()
-                    env.IMAGE_TAG_DISCOVERY_SERVER="${ECR_REGISTRY}/${APP_REPO_NAME}:discovery-server-v${MVN_VERSION}-b${BUILD_NUMBER}"
-                    MVN_VERSION=sh(script:'. ${WORKSPACE}/spring-petclinic-hystrix-dashboard/target/maven-archiver/pom.properties && echo $version', returnStdout:true).trim()
-                    env.IMAGE_TAG_HYSTRIX_DASHBOARD="${ECR_REGISTRY}/${APP_REPO_NAME}:hystrix-dashboard-v${MVN_VERSION}-b${BUILD_NUMBER}"
+                    env.IMAGE_TAG_DISCOVERY_SERVER="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:discovery-server-v${MVN_VERSION}-b${BUILD_NUMBER}"
                     MVN_VERSION=sh(script:'. ${WORKSPACE}/spring-petclinic-vets-service/target/maven-archiver/pom.properties && echo $version', returnStdout:true).trim()
-                    env.IMAGE_TAG_VETS_SERVICE="${ECR_REGISTRY}/${APP_REPO_NAME}:vets-service-v${MVN_VERSION}-b${BUILD_NUMBER}"
+                    env.IMAGE_TAG_VETS_SERVICE="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:vets-service-v${MVN_VERSION}-b${BUILD_NUMBER}"
                     MVN_VERSION=sh(script:'. ${WORKSPACE}/spring-petclinic-visits-service/target/maven-archiver/pom.properties && echo $version', returnStdout:true).trim()
-                    env.IMAGE_TAG_VISITS_SERVICE="${ECR_REGISTRY}/${APP_REPO_NAME}:visits-service-v${MVN_VERSION}-b${BUILD_NUMBER}"
-                    env.IMAGE_TAG_GRAFANA_SERVICE="${ECR_REGISTRY}/${APP_REPO_NAME}:grafana-service"
-                    env.IMAGE_TAG_PROMETHEUS_SERVICE="${ECR_REGISTRY}/${APP_REPO_NAME}:prometheus-service"
+                    env.IMAGE_TAG_VISITS_SERVICE="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:visits-service-v${MVN_VERSION}-b${BUILD_NUMBER}"
+                    env.IMAGE_TAG_GRAFANA_SERVICE="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:grafana-service"
+                    env.IMAGE_TAG_PROMETHEUS_SERVICE="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:prometheus-service"
                 }
             }
         }
+
         stage('Build App Docker Images') {
             steps {
                 echo 'Building App Dev Images'
@@ -62,7 +94,8 @@ pipeline {
                 sh 'docker image ls'
             }
         }
-        stage('Push Images to ECR Repo') {
+
+        stage('Push Images to GCP Artifact Repo') {
             steps {
                 echo "Pushing ${APP_NAME} App Images to ECR Repo"
                 sh ". ./jenkins/push-dev-docker-images-to-ecr.sh"
@@ -81,7 +114,7 @@ pipeline {
                 echo 'Creating QA Automation Infrastructure for Dev Environment'
                 sh """
                     cd infrastructure/dev-k8s-terraform
-                    sed -i "s/clarus/$ANS_KEYPAIR/g" main.tf
+                    sed -i "s/baby/$ANS_KEYPAIR/g" main.tf
                     terraform init
                     terraform apply -auto-approve -no-color
                 """
@@ -103,15 +136,20 @@ pipeline {
 
         stage('Deploy App on Kubernetes cluster'){
             steps {
-                echo 'Deploying App on Kubernetes'
-                sh "envsubst < k8s/petclinic_chart/values-template.yaml > k8s/petclinic_chart/values.yaml"
-                sh "sed -i s/HELM_VERSION/${BUILD_NUMBER}/ k8s/petclinic_chart/Chart.yaml"
-                sh "helm repo add stable-petclinic s3://petclinic-helm-charts-<put-your-name>/stable/myapp/"
-                sh "helm package k8s/petclinic_chart"
-                sh "helm s3 push --force petclinic_chart-${BUILD_NUMBER}.tgz stable-petclinic"
-                sh "envsubst < ansible/playbooks/dev-petclinic-deploy-template > ansible/playbooks/dev-petclinic-deploy.yaml"
-                sh "sleep 60"    
-                sh "ansible-playbook -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml ./ansible/playbooks/dev-petclinic-deploy.yaml"
+                withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                    echo 'Deploying App on Kubernetes'
+                    sh "envsubst < k8s/petclinic_chart/values-template.yaml > k8s/petclinic_chart/values.yaml"
+                    sh "sed -i s/HELM_VERSION/${BUILD_NUMBER}/ k8s/petclinic_chart/Chart.yaml"
+
+                    // sh "helm repo add stable-petclinic s3://petclinic-helm-charts-<put-your-name>/stable/myapp/"
+                    // sh "helm package k8s/petclinic_chart"
+                    // sh "helm s3 push --force petclinic_chart-${BUILD_NUMBER}.tgz stable-petclinic"
+
+                    sh "helm push petclinic_chart-${BUILD_NUMBER}.tgz oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}/"
+                    sh "envsubst < ansible/playbooks/dev-petclinic-deploy-template > ansible/playbooks/dev-petclinic-deploy.yaml"
+                    sh "sleep 60"    
+                    sh "ansible-playbook -i ./ansible/inventory/dev_stack_dynamic_inventory_aws_ec2.yaml ./ansible/playbooks/dev-petclinic-deploy.yaml"
+                }
             }
         }     
 
@@ -148,12 +186,12 @@ pipeline {
             echo 'Deleting all local images'
             sh 'docker image prune -af'
             echo 'Delete the Image Repository on ECR'
-            sh """
-                aws ecr delete-repository \
-                  --repository-name ${APP_REPO_NAME} \
-                  --region ${AWS_REGION}\
-                  --force
-                """
+            // sh """
+            //     aws ecr delete-repository \
+            //       --repository-name ${APP_REPO_NAME} \
+            //       --region ${AWS_REGION}\
+            //       --force
+            //     """
             echo 'Tear down the Kubernetes Cluster'
             sh """
             cd infrastructure/dev-k8s-terraform

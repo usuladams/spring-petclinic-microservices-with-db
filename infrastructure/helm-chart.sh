@@ -16,3 +16,6 @@ helm upgrade --install \
 helm upgrade --install \
         petclinic-app-release  --version ${BUILD_NUMBER} \
         --namespace petclinic-dev
+
+
+helm push petclinic_chart-${BUILD_NUMBER}.tgz oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}/

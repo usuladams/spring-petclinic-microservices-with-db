@@ -24,6 +24,5 @@ spec:
           resources:
             limits:
               memory: "512Mi"
-
-
-{{ .Values.mysql_image.tag }}
+      imagePullSecrets:
+        - name: gcp-artifact-registry

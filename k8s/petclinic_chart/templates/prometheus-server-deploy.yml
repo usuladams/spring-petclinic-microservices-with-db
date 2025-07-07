@@ -20,3 +20,5 @@ spec:
           resources:
             limits:
               memory: "512Mi"
+      imagePullSecrets:
+        - name: gcp-artifact-registry

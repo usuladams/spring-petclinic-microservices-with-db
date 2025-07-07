@@ -24,6 +24,5 @@ spec:
           resources:
             limits:
               memory: "512Mi"
-          env:
-          - name: SPRING_PROFILES_ACTIVE
-            value: "docker"
+      imagePullSecrets:
+        - name: gcp-artifact-registry
