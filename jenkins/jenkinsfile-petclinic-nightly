@@ -143,10 +143,6 @@ pipeline {
                     // sh "helm repo add stable-petclinic s3://petclinic-helm-charts-<put-your-name>/stable/myapp/"
                     // sh "helm package k8s/petclinic_chart"
                     // sh "helm s3 push --force petclinic_chart-${BUILD_NUMBER}.tgz stable-petclinic"
-                    helm push petclinic_chart-7.tgz oci://europe-west3-docker.pkg.dev/k8s-demo-464210/petclinic-helm-charts
-
-
-
 
                     sh "helm package k8s/petclinic_chart"
                     sh "helm push petclinic_chart-${BUILD_NUMBER}.tgz oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}"
