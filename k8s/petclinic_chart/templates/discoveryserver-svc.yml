@@ -10,5 +10,5 @@ spec:
    - name: http
      port: 8761
      targetPort: 8761
-     nodePort: 30001
+     nodePort: 30005
      protocol: TCP
