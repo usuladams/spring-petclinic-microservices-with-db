@@ -108,8 +108,30 @@ helm pull oci://europe-west3-docker.pkg.dev/k8s-demo-464210/petclinic-helm-chart
 helm upgrade --install     petclinic-app-release oci://europe-west3-docker.pkg.dev/k8s-demo-464210/petclinic-helm-charts/petclinic_chart     --version 7 --namespace petclinic-dev
 
 
-      # kubectl create secret docker-registry gcp-artifact-registry -n petclinic-dev \
-      #     --docker-server=${LOCATION}-docker.pkg.dev \
-      #     --docker-username=_json_key \
-      #     --docker-password=${GCP_KEY_JSON} \
-      #     --docker-email=usul.adem@gmail.com    
+      kubectl create secret docker-registry gcp-artifact-registry -n petclinic-dev \
+          --docker-server=${LOCATION}-docker.pkg.dev \
+          --docker-username=_json_key \
+          --docker-password=${GCP_KEY_JSON} \
+          --docker-email=usul.adem@gmail.com    
+
+
+kubectl create secret docker-registry gcp-artifact-registry2 -n default \
+  --docker-server=europe-west3-docker.pkg.dev \
+  --docker-username=_json_key \
+  --docker-password="$(cat /tmp/gcp-sa.json)" \
+  --docker-email=usul.adem@gmail.com
+
+
+kubectl run test5 \
+  --image=europe-west3-docker.pkg.dev/k8s-demo-464210/petclinic-app-dev/petclinic-app-dev:visits-service-v3.4.1-b20 \
+  --image-pull-policy=Always \
+  --overrides='
+  {
+    "spec": {
+      "imagePullSecrets": [
+        {
+          "name": "gcp-artifact-registry2"
+        }
+      ]
+    }
+  }'
