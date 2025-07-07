@@ -97,6 +97,8 @@
         src: "{{ google_credentials_path }}"
         dest: /tmp/gcp-sa.json
         mode: '0600'
+        owner: ubuntu
+        group: ubuntu
 
     - name: Authenticate with GCP service account
       ansible.builtin.shell: |
