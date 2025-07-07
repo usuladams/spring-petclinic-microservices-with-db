@@ -75,6 +75,12 @@
         state: restarted
         enabled: true
 
+    - name: Install docker-credential-gcloud
+      become: true
+      apt:
+        name: docker-credential-gcloud
+        state: present
+
   handlers:
     - name: Reload sysctl
       ansible.builtin.command: sysctl --system
