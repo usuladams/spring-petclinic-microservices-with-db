@@ -97,6 +97,8 @@
         gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
       become: false
       remote_user: ubuntu
+      environment:
+        GOOGLE_APPLICATION_CREDENTIALS: "{{ lookup('env', 'GOOGLE_APPLICATION_CREDENTIALS') }}"
 
   handlers:
     - name: Reload sysctl
