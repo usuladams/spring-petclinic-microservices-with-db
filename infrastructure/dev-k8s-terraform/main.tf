@@ -103,6 +103,16 @@ resource "aws_instance" "kube-master" {
     Id = "1"
     environment = "dev"
   }
+  root_block_device {
+    delete_on_termination = false
+    volume_size = 15
+    volume_type = "gp3"
+    iops = 3000
+    throughput = 125
+    tags = {
+      Name = "kube-master-root"
+    }
+  }
 }
 
 resource "aws_instance" "worker-1" {
@@ -119,6 +129,16 @@ resource "aws_instance" "worker-1" {
     Id = "1"
     environment = "dev"
   }
+  root_block_device {
+    delete_on_termination = false
+    volume_size = 15
+    volume_type = "gp3"
+    iops = 3000
+    throughput = 125
+    tags = {
+      Name = "worker1-root"
+    }
+  }  
 }
 
 resource "aws_instance" "worker-2" {
@@ -135,6 +155,16 @@ resource "aws_instance" "worker-2" {
     Id = "2"
     environment = "dev"
   }
+  root_block_device {
+    delete_on_termination = false
+    volume_size = 15
+    volume_type = "gp3"
+    iops = 3000
+    throughput = 125
+    tags = {
+      Name = "worker2-root"
+    }
+  }  
 }
 
 output kube-master-ip {
