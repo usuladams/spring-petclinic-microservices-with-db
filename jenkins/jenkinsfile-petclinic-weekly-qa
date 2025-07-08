@@ -91,7 +91,7 @@ pipeline {
                 sh ". ./jenkins/push-qa-docker-images-to-ecr.sh"
             }
         }
-        stage('Push Images to GCP Artifact Repo') {
+        stage('Create GKE cluster') {
             steps {
 
                 echo "Creating GKE cluster: ${CLUSTER_NAME} in ${LOCATION}..."
