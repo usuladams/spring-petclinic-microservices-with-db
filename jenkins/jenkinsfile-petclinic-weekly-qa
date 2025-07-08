@@ -148,6 +148,8 @@ pipeline {
                     helm upgrade --install \
                         petclinic-app-release oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}/petclinic_chart \
                         --version ${BUILD_NUMBER} --namespace petclinic-qa
+
+                    kubectl get ingress -n petclinic-qa -o jsonpath='{.items[*].status.loadBalancer.ingress[*].ip}' | xargs -I {} echo http://{}
                 '''
                 }
             }
