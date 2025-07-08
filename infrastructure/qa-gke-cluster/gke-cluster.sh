@@ -28,7 +28,8 @@ else
         --node-locations "$ZONE" \
         --machine-type "$MACHINE_TYPE" \
         --disk-size "$DISK_SIZE" \
-        --num-nodes "$NUM_NODES"
+        --num-nodes "$NUM_NODES" \
+          --service-account=jenkins-cd@k8s-demo-464210.iam.gserviceaccount.com 
 
     if [ $? -eq 0 ]; then
         echo "Cluster '$CLUSTER_NAME' creation complete and running!"
