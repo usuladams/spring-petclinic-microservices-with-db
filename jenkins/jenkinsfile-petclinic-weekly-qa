@@ -91,8 +91,10 @@ pipeline {
                 echo "Pushing ${APP_NAME} App Images to  GCP Artifact Repo"
 
                 withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'GCP_KEY')]) {
+                sh '''
                     gcloud auth activate-service-account --key-file=$GCP_KEY
-                    sh ". ./jenkins/push-qa-docker-images-to-ecr.sh"
+                    . ./jenkins/push-qa-docker-images-to-ecr.sh
+                '''
                 }
             }
         }
