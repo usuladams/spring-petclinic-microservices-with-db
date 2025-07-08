@@ -160,6 +160,7 @@ pipeline {
                     gcloud auth activate-service-account --key-file=$GCP_KEY
                     gcloud container clusters delete zeus-cluster --location us-west3 --quiet || echo "Cluster not found or already deleted."
                 '''
+                }
             }
         }
     }
