@@ -113,8 +113,8 @@ pipeline {
                     gcloud container clusters get-credentials $CLUSTER_NAME --region ${LOCATION} --project $PROJECT_ID
                     kubectl config current-context
                     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/cloud/deploy.yaml
-                    sleep 60   
-                    kubectl get ingress
+                    sleep 20
+                    kubectl get pods --namespace=ingress-nginx
                 '''
                 }
             }
@@ -139,7 +139,7 @@ pipeline {
                     kubectl create ns petclinic-qa || echo "namespace petclinic-qa already exists"
                     kubectl delete secret gcp-artifact-registry -n petclinic-qa || echo "there is no gcp-artifact-registry secret in petclinic-qa namespace"
 
-                    kubectl create secret docker-registry gcp-artifact-registry -n petclinic-dev \
+                    kubectl create secret docker-registry gcp-artifact-registry -n petclinic-qa \
                         --docker-server=${LOCATION}-docker.pkg.dev \
                         --docker-username=_json_key \
                         --docker-password="$(cat $KUBECONFIG_FILE)" \
@@ -147,7 +147,7 @@ pipeline {
 
                     helm upgrade --install \
                         petclinic-app-release oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}/petclinic_chart \
-                        --version ${BUILD_NUMBER} --namespace petclinic-dev
+                        --version ${BUILD_NUMBER} --namespace petclinic-qa
                 '''
                 }
             }
