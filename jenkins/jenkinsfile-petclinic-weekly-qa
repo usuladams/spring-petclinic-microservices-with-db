@@ -87,8 +87,13 @@ pipeline {
         }
         stage('Push Images to GCP Artifact Repo') {
             steps {
+
                 echo "Pushing ${APP_NAME} App Images to  GCP Artifact Repo"
-                sh ". ./jenkins/push-qa-docker-images-to-ecr.sh"
+
+                withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'GCP_KEY')]) {
+                    gcloud auth activate-service-account --key-file=$GCP_KEY
+                    sh ". ./jenkins/push-qa-docker-images-to-ecr.sh"
+                }
             }
         }
         stage('Create GKE cluster') {
