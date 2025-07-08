@@ -32,15 +32,10 @@ spec:
             limits:
               memory: "1Gi"
               cpu: "1"
-      #     volumeMounts:
-      #       - name: mysql-config
-      #         mountPath: /docker-entrypoint-initdb.d
-      #       - name: mysql-storage
-      #         mountPath: /var/lib/mysql
-      # volumes:
-      # - name: mysql-config
-      #   configMap:
-      #     name: mysql-configmap
-      # - name: mysql-storage
-      #   persistentVolumeClaim:
-      #     claimName: mysql-pv-claim
+          volumeMounts:
+            - name: mysql-storage
+              mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-storage
+        persistentVolumeClaim:
+          claimName: mysql-pv-claim
