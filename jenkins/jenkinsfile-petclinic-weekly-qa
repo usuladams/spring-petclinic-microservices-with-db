@@ -113,6 +113,7 @@ pipeline {
                     gcloud container clusters get-credentials $CLUSTER_NAME --region ${LOCATION} --project $PROJECT_ID
                     kubectl config current-context
                     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/cloud/deploy.yaml
+                    sleep 60   
                     kubectl get ingress
                 '''
                 }
@@ -141,7 +142,7 @@ pipeline {
                     kubectl create secret docker-registry gcp-artifact-registry -n petclinic-dev \
                         --docker-server=${LOCATION}-docker.pkg.dev \
                         --docker-username=_json_key \
-                        --docker-password="$(cat $GOOGLE_APPLICATION_CREDENTIALS)" \
+                        --docker-password="$(cat $KUBECONFIG_FILE)" \
                         --docker-email=usul.adem@gmail.com
 
                     helm upgrade --install \
