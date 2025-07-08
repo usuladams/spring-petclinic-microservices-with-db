@@ -87,22 +87,21 @@ pipeline {
         }
         stage('Push Images to GCP Artifact Repo') {
             steps {
-
                 echo "Pushing ${APP_NAME} App Images to  GCP Artifact Repo"
-
-                withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'GCP_KEY')]) {
-                sh '''
-                    gcloud auth activate-service-account --key-file=$GCP_KEY
-                    . ./jenkins/push-qa-docker-images-to-ecr.sh
-                '''
-                }
+                sh ". ./jenkins/push-qa-docker-images-to-ecr.sh"
             }
         }
         stage('Create GKE cluster') {
             steps {
 
                 echo "Creating GKE cluster: ${CLUSTER_NAME} in ${LOCATION}..."
-                sh ". ./infrastructure/qa-gke-cluster/gke-cluster.sh"
+
+                withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'GCP_KEY')]) {
+                sh '''
+                    gcloud auth activate-service-account --key-file=$GCP_KEY
+                    . ./infrastructure/qa-gke-cluster/gke-cluster.sh
+                '''
+                }
             }
         }
         stage('Install Ingress Controller') {
