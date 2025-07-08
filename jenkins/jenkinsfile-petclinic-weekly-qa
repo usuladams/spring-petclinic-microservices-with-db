@@ -113,7 +113,7 @@ pipeline {
                     gcloud container clusters get-credentials $CLUSTER_NAME --region ${LOCATION} --project $PROJECT_ID
                     kubectl config current-context
                     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/cloud/deploy.yaml
-                    sleep 20
+                    sleep 60
                     kubectl get pods --namespace=ingress-nginx
                 '''
                 }
@@ -148,7 +148,8 @@ pipeline {
                     helm upgrade --install \
                         petclinic-app-release oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}/petclinic_chart \
                         --version ${BUILD_NUMBER} --namespace petclinic-qa
-
+                    
+                    sleep 90
                     kubectl get ingress -n petclinic-qa -o jsonpath='{.items[*].status.loadBalancer.ingress[*].ip}' | xargs -I {} echo http://{}
                 '''
                 }
