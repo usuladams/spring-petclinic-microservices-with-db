@@ -1,8 +1,8 @@
 #!/bin/bash
 
 CLUSTER_NAME="zeus-cluster"
-REGION="us-west3"
-ZONE="us-west3-a,us-west3-b,us-west3-c"
+REGION="europe-west3"
+ZONE="europe-west3-a,europe-west3-b,europe-west3-c"
 NUM_NODES=1
 DISK_SIZE="30GB"
 MACHINE_TYPE="e2-medium"
