@@ -46,7 +46,7 @@
         <container.build.extraarg>--load</container.build.extraarg>
     </properties>
 
-    <dependencyManagement>
+    <dependencyManagement>  
         <dependencies>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -67,6 +67,19 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus</id>
+            <name>maven-releases</name>
+            <url>http://35.234.108.249:8081/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus</id>
+            <name>maven-snapshots</name>
+            <url>http://35.234.108.249:8081/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <profiles>
         <profile>
