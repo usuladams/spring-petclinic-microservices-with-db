@@ -12,7 +12,7 @@ pipeline {
         RANCHER_CONTEXT="c-9ql97:p-v7gl2" 
         CLUSTERID="c-9ql97"
         RANCHER_CREDS=credentials('rancher-petclinic-credentials')
-        RANCHER_CA='rancher-ca'
+        RANCHER_CA='rancher-ca-2'
     }
 
     stages {
