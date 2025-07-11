@@ -1,0 +1,29 @@
+# /etc/rancher/rke2/config.yaml
+
+write-kubeconfig-mode: "0644"
+
+# TLS için SAN girişi (örneğin IP, domain vs.)
+tls-san:
+  - 10.142.0.12        # Private IP
+  - rancher.babydevops.space      # Domainin varsa ekle
+
+# Etiketler (opsiyonel)
+node-label:
+  - "role=all-in-one"
+
+# Etcd snapshot ayarları
+etcd-snapshot-schedule-cron: "0 */6 * * *"   # Her 6 saatte bir
+etcd-snapshot-retention: 4                   # Son 24 saat için 6x4 = 24 saat saklama
+
+# Bu node cluster'ın ilk server nodu olduğu için "server:" satırı eklemiyoruz
+# Eğer bu başka bir node olsaydı, aşağıdaki satırı eklerdik:
+# server: https://<RKE2_SERVER_IP>:9345
+
+# Cluster token - agent'lar için gerekli (yeni kurulumda auto oluşturulur veya sabitlenebilir)
+#token: your-super-secret-token
+
+# Gerekirse loglama için debug modu
+debug: true
+
+# ingress-nginx için forwarded headers ayarı (RKE2’de nginx varsayılan değil, bunu Helm ile kuracaksan kullanırsın)
+# Kendi ingress’i kurduğunda bu ayarı ingress değerlerine eklersin
