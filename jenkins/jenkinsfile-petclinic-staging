@@ -95,22 +95,6 @@ pipeline {
             }
         }
 
-        stage('Install Ingress Controller') {
-            steps {
-                echo "Install Ingress Controller in Kubernetes Cluster on GKE"
-                withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'KUBECONFIG_FILE')]) {
-                sh '''
-                    gcloud auth activate-service-account --key-file=$KUBECONFIG_FILE
-                    gcloud container clusters get-credentials $CLUSTER_NAME --region ${LOCATION} --project $PROJECT_ID
-                    kubectl config current-context
-                    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/cloud/deploy.yaml
-                    sleep 60
-                    kubectl get pods --namespace=ingress-nginx
-                '''
-                }
-            }
-        }
-
         stage('Deploy App on Kubernetes Cluster'){
             steps {
                 echo 'Deploying App on Kubernetes Cluster'
