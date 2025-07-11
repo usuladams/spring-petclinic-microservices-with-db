@@ -102,7 +102,7 @@ pipeline {
 
                 withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'KUBECONFIG_FILE')]) {
                 sh '''
-                    rancher login --cacert $(cat $RANCHER_CA) --context $RANCHER_CONTEXT --token $RANCHER_CREDS_USR:$RANCHER_CREDS_PSW $RANCHER_URL 
+                    rancher login --cacert $RANCHER_CA --context $RANCHER_CONTEXT --token $RANCHER_CREDS_USR:$RANCHER_CREDS_PSW $RANCHER_URL 
                     envsubst < k8s/petclinic_chart/values-template.yaml > k8s/petclinic_chart/values.yaml
                     sed -i s/HELM_VERSION/${BUILD_NUMBER}/ k8s/petclinic_chart/Chart.yaml
 
