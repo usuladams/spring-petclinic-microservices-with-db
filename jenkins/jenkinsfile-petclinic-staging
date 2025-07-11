@@ -100,8 +100,10 @@ pipeline {
             steps {
                 echo 'Deploying App on Kubernetes Cluster'
 
-                withCredentials([file(credentialsId: "${CREDENTIALS_ID}", variable: 'KUBECONFIG_FILE')])
-                withCredentials([file(credentialsId: "${RANCHER_CA}", variable: 'RANCHER_CA')]) {
+                withCredentials([
+                    file(credentialsId: "${CREDENTIALS_ID}", variable: 'KUBECONFIG_FILE'),
+                    file(credentialsId: "${RANCHER_CA}", variable: 'RANCHER_CA')
+                ]) {    
                 sh '''
                     rancher login --cacert $RANCHER_CA --context $RANCHER_CONTEXT --token $RANCHER_CREDS_USR:$RANCHER_CREDS_PSW $RANCHER_URL 
                     envsubst < k8s/petclinic_chart/values-template.yaml > k8s/petclinic_chart/values.yaml
