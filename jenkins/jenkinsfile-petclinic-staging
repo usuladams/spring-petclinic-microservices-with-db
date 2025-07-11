@@ -120,7 +120,7 @@ pipeline {
                     rancher cluster kf $CLUSTERID > k8s/config
                     chmod 400 k8s/config
 
-                    // Install Ingress Controller in Kubernetes Cluster on GKE
+                    #Install Ingress Controller in Kubernetes Cluster on GKE
                     rancher kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/cloud/deploy.yaml
                     sleep 60
                     rancher kubectl get pods --namespace=ingress-nginx
