@@ -108,11 +108,6 @@ pipeline {
                     helm package k8s/petclinic_chart
                     helm push petclinic_chart-${BUILD_NUMBER}.tgz oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}
 
-                    // Install Ingress Controller in Kubernetes Cluster on GKE
-                    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/cloud/deploy.yaml
-                    sleep 60
-                    kubectl get pods --namespace=ingress-nginx
-
                     rancher kubectl delete secret gcp-artifact-registry -n petclinic-staging-ns || echo "there is no gcp-artifact-registry secret in petclinic-staging-ns namespace"
 
                     rancher kubectl create secret docker-registry gcp-artifact-registry -n petclinic-staging-ns \
@@ -124,13 +119,19 @@ pipeline {
                     rm -f k8s/config
                     rancher cluster kf $CLUSTERID > k8s/config
                     chmod 400 k8s/config
+
+                    // Install Ingress Controller in Kubernetes Cluster on GKE
+                    rancher kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.12.3/deploy/static/provider/cloud/deploy.yaml
+                    sleep 60
+                    rancher kubectl get pods --namespace=ingress-nginx
                     
+
                     helm upgrade --install \
                         petclinic-app-release oci://${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${HELM_CHART_REPO_NAME}/petclinic_chart \
-                        --version ${BUILD_NUMBER} --namespace petclinic-staging-ns 
+                        --version ${BUILD_NUMBER} --namespace petclinic-staging-ns --kubeconfig k8s/config
                     
                     sleep 90
-                    kubectl get ingress -n petclinic-staging-ns -o jsonpath='{.items[*].status.loadBalancer.ingress[*].ip}' | xargs -I {} echo http://{}
+                    rancher kubectl get ingress -n petclinic-staging-ns -o jsonpath='{.items[*].status.loadBalancer.ingress[*].ip}' | xargs -I {} echo http://{}
                 '''
                 }
             }
