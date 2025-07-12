@@ -1,8 +1,8 @@
 #!/bin/bash
 
-CLUSTER_NAME="demo-cluster"
+CLUSTER_NAME="cluster-baby123"
 REGION="europe-west3"
-ZONE="europe-west3-a"
+ZONE="europe-west3-a,europe-west3-b"
 NUM_NODES=1
 DISK_SIZE="30GB"
 MACHINE_TYPE="n1-standard-2"
