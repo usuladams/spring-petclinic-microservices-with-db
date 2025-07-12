@@ -4,7 +4,7 @@ pipeline {
         APP_NAME="petclinic"
         APP_REPO_NAME="${APP_NAME}-app-prod"
         PROJECT_ID = 'k8s-demo-464210'
-        CLUSTER_NAME = 'zeus-cluster'
+        CLUSTER_NAME = 'demo-cluster'
         LOCATION="europe-west3"
         HELM_CHART_REPO_NAME="${APP_NAME}-helm-charts-prod"
         ARTIFACT_REGISTRY="${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${APP_REPO_NAME}"
