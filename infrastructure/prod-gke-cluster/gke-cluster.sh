@@ -2,7 +2,7 @@
 
 CLUSTER_NAME="zeus-cluster"
 REGION="europe-west3"
-ZONE="europe-west3-a,europe-west3-b,europe-west3-c"
+ZONE="europe-west3-a,europe-west3-b"
 NUM_NODES=1
 DISK_SIZE="30GB"
 MACHINE_TYPE="n1-standard-2"
