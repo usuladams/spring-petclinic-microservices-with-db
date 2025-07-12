@@ -15,7 +15,7 @@ pipeline {
     }
 
     stages {
-
+        
         stage('Create GCP Artifact Repo') {
             steps {
                 echo "Creating GCP Artifact Repo for ${APP_NAME} app"
