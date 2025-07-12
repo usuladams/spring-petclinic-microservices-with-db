@@ -8,11 +8,10 @@ pipeline {
         HELM_CHART_REPO_NAME="${APP_NAME}-helm-charts-staging"
         ARTIFACT_REGISTRY="${LOCATION}-docker.pkg.dev/${PROJECT_ID}/${APP_REPO_NAME}"
         CREDENTIALS_ID = 'gcp-k8s-token'
-        RANCHER_URL="https://34.40.38.116/"
-        RANCHER_CONTEXT="c-9ql97:p-v7gl2" 
-        CLUSTERID="c-9ql97"
-        RANCHER_CREDS=credentials('rancher-petclinic-credentials')
-        RANCHER_CA='rancher-ca-2'
+        RANCHER_URL="https://rancher.babydevops.space/"
+        RANCHER_CONTEXT="c-mfjm8:p-q4gm6" 
+        CLUSTERID="c-mfjm8"
+        RANCHER_CREDS=credentials('rancher-credentials')
     }
 
     stages {
@@ -105,7 +104,7 @@ pipeline {
                     file(credentialsId: "${RANCHER_CA}", variable: 'RANCHER_CA')
                 ]) {    
                 sh '''
-                    rancher login --cacert $RANCHER_CA --context $RANCHER_CONTEXT --token $RANCHER_CREDS_USR:$RANCHER_CREDS_PSW $RANCHER_URL 
+                    rancher login --context $RANCHER_CONTEXT --token $RANCHER_CREDS_USR:$RANCHER_CREDS_PSW $RANCHER_URL 
                     envsubst < k8s/petclinic_chart/values-template.yaml > k8s/petclinic_chart/values.yaml
                     sed -i s/HELM_VERSION/${BUILD_NUMBER}/ k8s/petclinic_chart/Chart.yaml
 
