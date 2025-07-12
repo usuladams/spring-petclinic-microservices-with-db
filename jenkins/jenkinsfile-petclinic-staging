@@ -97,7 +97,6 @@ pipeline {
 
                 withCredentials([
                     file(credentialsId: "${CREDENTIALS_ID}", variable: 'KUBECONFIG_FILE'),
-                    file(credentialsId: "${RANCHER_CA}", variable: 'RANCHER_CA')
                 ]) {    
                 sh '''
                     rancher login --context $RANCHER_CONTEXT --token $RANCHER_CREDS_USR:$RANCHER_CREDS_PSW $RANCHER_URL 
