@@ -5,7 +5,7 @@ REGION="europe-west3"
 ZONE="europe-west3-a,europe-west3-b"
 NUM_NODES=1
 DISK_SIZE="30GB"
-MACHINE_TYPE="n1-standard-2"
+MACHINE_TYPE="e2-medium"
 
 echo "Checking if cluster '$CLUSTER_NAME' exists in region '$REGION'..."
 
