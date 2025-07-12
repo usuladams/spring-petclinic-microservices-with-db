@@ -1,0 +1,16 @@
+MVN_VERSION=$(. ${WORKSPACE}/spring-petclinic-admin-server/target/maven-archiver/pom.properties && echo $version)
+export IMAGE_TAG_ADMIN_SERVER="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:admin-server-prod-v${MVN_VERSION}-b${BUILD_NUMBER}"
+MVN_VERSION=$(. ${WORKSPACE}/spring-petclinic-api-gateway/target/maven-archiver/pom.properties && echo $version)
+export IMAGE_TAG_API_GATEWAY="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:api-gateway-prod-v${MVN_VERSION}-b${BUILD_NUMBER}"
+MVN_VERSION=$(. ${WORKSPACE}/spring-petclinic-config-server/target/maven-archiver/pom.properties && echo $version)
+export IMAGE_TAG_CONFIG_SERVER="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:config-server-prod-v${MVN_VERSION}-b${BUILD_NUMBER}"
+MVN_VERSION=$(. ${WORKSPACE}/spring-petclinic-customers-service/target/maven-archiver/pom.properties && echo $version)
+export IMAGE_TAG_CUSTOMERS_SERVICE="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:customers-service-prod-v${MVN_VERSION}-b${BUILD_NUMBER}"
+MVN_VERSION=$(. ${WORKSPACE}/spring-petclinic-discovery-server/target/maven-archiver/pom.properties && echo $version)
+export IMAGE_TAG_DISCOVERY_SERVER="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:discovery-server-prod-v${MVN_VERSION}-b${BUILD_NUMBER}"
+MVN_VERSION=$(. ${WORKSPACE}/spring-petclinic-vets-service/target/maven-archiver/pom.properties && echo $version)
+export IMAGE_TAG_VETS_SERVICE="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:vets-service-prod-v${MVN_VERSION}-b${BUILD_NUMBER}"
+MVN_VERSION=$(. ${WORKSPACE}/spring-petclinic-visits-service/target/maven-archiver/pom.properties && echo $version)
+export IMAGE_TAG_VISITS_SERVICE="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:visits-service-prod-v${MVN_VERSION}-b${BUILD_NUMBER}"
+export IMAGE_TAG_GRAFANA_SERVICE="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:grafana-service"
+export IMAGE_TAG_PROMETHEUS_SERVICE="${ARTIFACT_REGISTRY}/${APP_REPO_NAME}:prometheus-service"
