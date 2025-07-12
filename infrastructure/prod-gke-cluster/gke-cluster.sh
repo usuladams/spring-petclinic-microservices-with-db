@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CLUSTER_NAME="cluster-baby123"
+CLUSTER_NAME="cluster-baby12345"
 REGION="europe-west3"
 ZONE="europe-west3-a,europe-west3-b"
 NUM_NODES=1
