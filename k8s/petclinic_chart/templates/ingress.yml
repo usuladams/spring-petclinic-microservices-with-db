@@ -4,7 +4,13 @@ metadata:
   name: api-gateway
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
 spec:
+  tls:
+  - hosts:
+    - {{ .Values.DNS_NAME }}
+    - {{ .Values.ARGO_DNS_NAME }}
+    secretName: petclinic-tls
   ingressClassName: nginx
   rules:
     - host: {{ .Values.DNS_NAME }}
@@ -17,10 +23,13 @@ spec:
                 name: api-gateway
                 port: 
                   number: 8080
-          - path: /tracing
+    - host: {{ .Values.ARGO_DNS_NAME }}
+      http:
+        paths:
+          - path: /
             pathType: Prefix
             backend:
               service:
-                name: tracing-server
+                name: argocd-server
                 port:
-                  number: 9411
+                  number: 443
