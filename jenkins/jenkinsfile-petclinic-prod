@@ -151,8 +151,8 @@ pipeline {
                         --version ${BUILD_NUMBER} --namespace petclinic-prod
                     
                     sleep 90
-                    #kubectl get ingress -n petclinic-prod -o jsonpath='{.items[*].status.loadBalancer.ingress[*].ip}' | xargs -I {} echo http://{}
-                    kubectl get ingress api-gateway -n petclinic-prod -o jsonpath='{.spec.rules[*].host} {.status.loadBalancer.ingress[0].ip}' | awk '{print "Hostname: http://"$1"\nIP: http://"$2}'
+                    kubectl get ingress -n petclinic-prod -o jsonpath='{.items[*].status.loadBalancer.ingress[*].ip}' | xargs -I {} echo http://{}
+                    # kubectl get ingress api-gateway -n petclinic-prod -o jsonpath='{.spec.rules[*].host} {.status.loadBalancer.ingress[0].ip}' | awk '{print "Hostname: http://"$1"\nIP: http://"$2}'
 
                 '''
                 }
