@@ -123,8 +123,8 @@ pipeline {
                     envsubst < k8s/petclinic_chart/values-template.yaml > k8s/petclinic_chart/values.yaml
                     sed -i s/HELM_VERSION/${BUILD_NUMBER}/ k8s/petclinic_chart/Chart.yaml
 
-                    cp k8s/petclinic_chart/values.yaml chart-repo/k8s/petclinic_chart/
-                    cp k8s/petclinic_chart/Chart.yaml chart-repo/k8s/petclinic_chart/
+                    cp k8s/petclinic_chart/values.yaml chart-repo/values.yaml 
+                    cp k8s/petclinic_chart/Chart.yaml chart-repo/Chart.yaml
                 """
             }
         }
@@ -132,14 +132,18 @@ pipeline {
         stage('Git Commit & Push') {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${GIT_CREDENTIALS_ID}", usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
-                    sh """
-                        git config user.email "usul.adem@gmail.com"
-                        git config user.name "CI Bot"
-                        git add .
-                        git commit -m "ci: update image tag to ${BUILD_NUMBER}"
-                        git push https://${GIT_USER}:${GIT_TOKEN}@ithub.com/usuladams/spring-petclinic-microservices-with-kubernetes-helm.git HEAD:main
+                    dir('chart-repo') {
+                        sh """
+                            git config user.email "usul.adem@gmail.com"
+                            git config user.name "CI Bot"
 
-                    """
+                            git add .
+                            git commit -m "ci: update image tag to ${BUILD_NUMBER}" || echo "No changes to commit"
+
+                            git push https://${GIT_USER}:${GIT_TOKEN}@github.com/usuladams/spring-petclinic-microservices-with-kubernetes-helm.git HEAD:main
+                        """
+                    }
+
                 }
             }
         }
